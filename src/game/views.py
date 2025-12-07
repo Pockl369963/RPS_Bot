@@ -111,7 +111,8 @@ def play_view(request):
             "wins": player.wins,
             "losses": player.losses,
             "draws": player.draws,
-            "win_rate": player.wins / player.total_games if player.total_games > 0 else 0
+            "win_rate": player.wins / (player.wins + player.losses) if (player.wins + player.losses) > 0 else 0,
+            "ai_win_rate": player.losses / (player.wins + player.losses) if (player.wins + player.losses) > 0 else 0
         },
         "strategy": strategy_name
     })

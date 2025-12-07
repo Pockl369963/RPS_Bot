@@ -9,10 +9,10 @@ document.addEventListener('DOMContentLoaded', () => {
         losses: document.getElementById('losses'),
         draws: document.getElementById('draws'),
         winRate: document.getElementById('win-rate'),
+        aiWinRate: document.getElementById('ai-win-rate'),
         totalGames: document.getElementById('total-games'),
         userHand: document.getElementById('user-hand'),
         aiHand: document.getElementById('ai-hand'),
-        strategy: document.getElementById('strategy-name'),
         result: document.getElementById('result-message'),
         btns: document.querySelectorAll('.choice-btn'),
         resetBtn: document.getElementById('reset-btn'),
@@ -82,7 +82,6 @@ document.addEventListener('DOMContentLoaded', () => {
         els.btns.forEach(btn => btn.disabled = isLoading);
         if (isLoading) {
             els.result.textContent = "...";
-            els.strategy.textContent = "Thinking...";
         }
     }
 
@@ -95,8 +94,6 @@ document.addEventListener('DOMContentLoaded', () => {
         els.result.textContent = TEXTS[data.result];
         els.result.style.color = COLORS[data.result];
 
-        // Strategy
-        els.strategy.textContent = `Strategy: ${data.strategy}`;
 
         // Stats
         const s = data.stats;
@@ -105,6 +102,7 @@ document.addEventListener('DOMContentLoaded', () => {
         animateValue(els.draws, parseInt(els.draws.textContent), s.draws);
         animateValue(els.totalGames, parseInt(els.totalGames.textContent), s.total);
         els.winRate.textContent = `${(s.win_rate * 100).toFixed(1)}%`;
+        els.aiWinRate.textContent = `${(s.ai_win_rate * 100).toFixed(1)}%`;
 
         // Dynamic Theme (Border Glow)
         document.querySelector('.container').style.boxShadow = `0 0 50px ${COLORS[data.result]}20`; // 20 = low opacity

@@ -1,7 +1,8 @@
 :root {
     --bg-color: #0f172a;
     --card-bg: rgba(30, 41, 59, 0.7);
-    --accent-color: #3b82f6; /* Blue by default */
+    --accent-color: #3b82f6;
+    /* Blue by default */
     --accent-glow: rgba(59, 130, 246, 0.5);
     --text-primary: #f1f5f9;
     --text-secondary: #94a3b8;
@@ -92,7 +93,8 @@ h1 {
     padding: 2rem 0;
 }
 
-.player-side, .ai-side {
+.player-side,
+.ai-side {
     flex: 1;
     display: flex;
     flex-direction: column;
@@ -131,11 +133,18 @@ h1 {
     vertical-align: middle;
 }
 
-.ai-thought {
+.side-stat {
     font-family: var(--font-mono);
-    font-size: 0.8rem;
     color: var(--text-secondary);
-    min-height: 1.2em;
+    font-size: 0.9rem;
+    margin-top: 0.5rem;
+    text-align: center;
+}
+
+.side-stat .stat-value {
+    color: var(--accent-color);
+    font-weight: 700;
+    margin-left: 0.5rem;
 }
 
 .result-display {
@@ -143,7 +152,7 @@ h1 {
     font-size: 2rem;
     font-weight: 900;
     min-height: 3rem;
-    text-shadow: 0 0 10px rgba(0,0,0,0.5);
+    text-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
 }
 
 .controls {
@@ -216,15 +225,33 @@ footer {
 
 /* Animations included in API Logic: Glitch, Pop, etc can be added via JS classes */
 
-.win-glow { box-shadow: 0 0 30px var(--win-color); border-color: var(--win-color); }
-.lose-glow { box-shadow: 0 0 30px var(--lose-color); border-color: var(--lose-color); }
-.draw-glow { box-shadow: 0 0 30px var(--draw-color); border-color: var(--draw-color); }
+.win-glow {
+    box-shadow: 0 0 30px var(--win-color);
+    border-color: var(--win-color);
+}
+
+.lose-glow {
+    box-shadow: 0 0 30px var(--lose-color);
+    border-color: var(--lose-color);
+}
+
+.draw-glow {
+    box-shadow: 0 0 30px var(--draw-color);
+    border-color: var(--draw-color);
+}
 
 .animate-pop {
     animation: pop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
 @keyframes pop {
-    0% { transform: scale(0.8); opacity: 0; }
-    100% { transform: scale(1); opacity: 1; }
+    0% {
+        transform: scale(0.8);
+        opacity: 0;
+    }
+
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
 }

@@ -14,7 +14,7 @@
 <body>
     <div class="container">
         <header>
-            <h1>EVOLUTIONARY <span class="accent">RPS</span></h1>
+            <h1><span class="accent">じゃんけんAI</span></h1>
             <div class="stats-bar">
                 <div class="stat-item">
                     <span class="stat-label">Wins</span>
@@ -28,10 +28,6 @@
                     <span class="stat-label">Losses</span>
                     <span class="stat-value" id="losses">0</span>
                 </div>
-                <div class="stat-item">
-                    <span class="stat-label">Rate</span>
-                    <span class="stat-value" id="win-rate">0.0%</span>
-                </div>
             </div>
         </header>
 
@@ -39,6 +35,10 @@
             <div class="game-arena">
                 <div class="player-side">
                     <h2>YOU</h2>
+                    <div class="side-stat">
+                        <span class="stat-label">Win Rate</span>
+                        <span class="stat-value" id="win-rate">0.0%</span>
+                    </div>
                     <div class="hand-display" id="user-hand">
                         <span class="emoji">Waiting...</span>
                     </div>
@@ -48,11 +48,12 @@
 
                 <div class="ai-side">
                     <h2>AI <span class="ai-status">ONLINE</span></h2>
+                    <div class="side-stat">
+                        <span class="stat-label">Win Rate</span>
+                        <span class="stat-value" id="ai-win-rate">0.0%</span>
+                    </div>
                     <div class="hand-display" id="ai-hand">
                         <span class="emoji">Waiting...</span>
-                    </div>
-                    <div class="ai-thought">
-                        Strategy: <span id="strategy-name">Initializing...</span>
                     </div>
                 </div>
             </div>
@@ -64,15 +65,15 @@
             <div class="controls">
                 <button class="choice-btn" data-move="R">
                     <span class="icon">✊</span>
-                    <span class="label">ROCK</span>
+                    <span class="label">グー</span>
                 </button>
                 <button class="choice-btn" data-move="P">
                     <span class="icon">✋</span>
-                    <span class="label">PAPER</span>
+                    <span class="label">パー</span>
                 </button>
                 <button class="choice-btn" data-move="S">
                     <span class="icon">✌️</span>
-                    <span class="label">SCISSORS</span>
+                    <span class="label">チョキ</span>
                 </button>
             </div>
         </main>
