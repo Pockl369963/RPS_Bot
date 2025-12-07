@@ -3,7 +3,8 @@ from game.ai.predictors import (
     RandomPredictor,
     MarkovPredictor,
     FrequencyPredictor,
-    PatternMatcherPredictor
+    PatternMatcherPredictor,
+    RNNPredictor
 )
 
 class StrategySelector:
@@ -13,6 +14,7 @@ class StrategySelector:
             "Markov": MarkovPredictor(),
             "Frequency": FrequencyPredictor(),
             "Pattern": PatternMatcherPredictor(),
+            "RNN": RNNPredictor(),
         }
         
         # 戦略キー: "PredictorName_Type" (Type: P0, P1)

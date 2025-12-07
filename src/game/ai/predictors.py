@@ -1,6 +1,11 @@
 import random
 from abc import ABC, abstractmethod
 from collections import Counter, defaultdict
+import torch
+import torch.nn as nn
+import torch.optim as optim
+import numpy as np
+from .models import RPSLSTM
 
 class BasePredictor(ABC):
     """すべての予測器の基底クラス"""
@@ -31,11 +36,6 @@ class MarkovPredictor(BasePredictor):
         # 遷移データの構築
         transitions = defaultdict(lambda: defaultdict(int))
         
-        # 履歴を舐めて遷移をカウント (A -> B)
-        # history[-1] は現在の状況なので、その前までを使ってモデルを作る
-        # あるいは全履歴を使う。ここでは全履歴を使う。
-        # 直前の手 (last_move) に対して、次に来やすい手を予測したい。
-        
         for i in range(len(history) - 1):
             current_move = history[i].get("user_move")
             next_move = history[i+1].get("user_move")
@@ -47,14 +47,10 @@ class MarkovPredictor(BasePredictor):
         if not last_user_move or last_user_move not in transitions:
             return random.choice(["R", "P", "S"])
         
-        # 次の手の候補と頻度
         candidates = transitions[last_user_move]
         if not candidates:
              return random.choice(["R", "P", "S"])
              
-        # 最も頻度の高い手を選択 (Greedy)
-        # 確率的に選ぶなら random.choices を使うが、
-        # ここでは「最も可能性が高い手」を予測値とする
         predicted_move = max(candidates, key=candidates.get)
         return predicted_move
 
@@ -76,39 +72,81 @@ class PatternMatcherPredictor(BasePredictor):
     def predict(self, history: list) -> str:
         moves = "".join([h.get("user_move", "") for h in history if h.get("user_move")])
         n = len(moves)
-        if n < 4: # 最低でもパターン(2or3) + 続き(1) が必要
+        if n < 4: 
              return random.choice(["R", "P", "S"])
         
-        # 長いパターンから順に検索 (例: 5手前のパターン 〜 2手前のパターン)
-        # min_pattern_len = 2
-        # max_pattern_len = 10 (適当な上限)
-        
         for k in range(min(10, n - 1), 1, -1):
-            pattern = moves[-k:] # 直近 k 手
-            
-            # パターンが過去（今回除く）に出現したか検索
-            # moves[:-1] は「今の直前」まで（つまり今回を含まない）だが、
-            # パターンマッチングは「今の直前k手」が「それ以前」にあったかを探す。
-            # 検索対象は moves[:-(k)] ではなく、moves[:-1] の中で pattern を探す。
-            # ただし、patternの次の手を知りたいので、
-            # moves[: -1] の中で pattern が出現し、かつその直後に文字がある場所を探す。
-            
-            # 簡単のため string.rfind を使う
-            # 検索範囲は「最後の pattern」を含まない範囲
+            pattern = moves[-k:]
             search_text = moves[:-1] 
             idx = search_text.rfind(pattern)
             
             if idx != -1:
-                # 見つかったパターンの直後の手を取得
-                # search_text[idx] から始まる長さ k の文字列が pattern。
-                # その次は search_text[idx + k]
-                # search_text の長さが足りているかチェック
                 if idx + k < len(search_text):
                     next_move = search_text[idx + k]
                     return next_move
                 
-                # もし検索範囲の末尾で見つかってしまった場合（続きがない）、
-                # さらに前を探す必要があるが、rfindなのでそれは「なし」と等しい
-                # (search_text自体が「続きを知っている過去のデータ」であるべき)
-                
         return random.choice(["R", "P", "S"])
+
+class RNNPredictor(BasePredictor):
+    """RNN (LSTM) を用いた予測"""
+    def __init__(self, seq_length=10, hidden_size=32):
+        self.seq_length = seq_length
+        self.model = RPSLSTM(input_size=3, hidden_size=hidden_size, output_size=3)
+        self.optimizer = optim.Adam(self.model.parameters(), lr=0.01)
+        self.criterion = nn.CrossEntropyLoss()
+        self.mapping = {'R': [1, 0, 0], 'P': [0, 1, 0], 'S': [0, 0, 1]}
+        self.idx_to_move = {0: 'R', 1: 'P', 2: 'S'}
+        self.move_to_idx = {'R': 0, 'P': 1, 'S': 2}
+        
+    def _moves_to_tensor(self, moves):
+        # moves: list of 'R', 'P', 'S'
+        features = [self.mapping[m] for m in moves]
+        return torch.tensor([features], dtype=torch.float32) # (1, seq, 3)
+
+    def predict(self, history: list) -> str:
+        if len(history) < self.seq_length:
+            return random.choice(['R', 'P', 'S'])
+            
+        # Get last seq_length user moves
+        user_moves = [h['user_move'] for h in history[-self.seq_length:] if h.get('user_move')]
+        if len(user_moves) < self.seq_length:
+             return random.choice(['R', 'P', 'S'])
+
+        # Predict next user move
+        self.model.eval()
+        with torch.no_grad():
+            input_tensor = self._moves_to_tensor(user_moves)
+            output = self.model(input_tensor) # (1, 3)
+            predicted_idx = torch.argmax(output).item()
+            predicted_move = self.idx_to_move[predicted_idx]
+            
+        # Train on the latest data if we have enough
+        if len(history) > self.seq_length + 1:
+            self._train_step(history)
+            
+        return predicted_move
+
+    def _train_step(self, history):
+        # Train on the last available sequence
+        # We try to predict history[-1] given history[-(seq+1):-1]
+        
+        # Extract user mvoes
+        moves = [h['user_move'] for h in history if h.get('user_move')]
+        if len(moves) < self.seq_length + 1:
+            return
+
+        prev_seq = moves[-(self.seq_length+1):-1]
+        target_move = moves[-1]
+        
+        if len(prev_seq) != self.seq_length:
+            return
+
+        self.model.train()
+        input_tensor = self._moves_to_tensor(prev_seq)
+        target_tensor = torch.tensor([self.move_to_idx[target_move]], dtype=torch.long)
+        
+        self.optimizer.zero_grad()
+        output = self.model(input_tensor)
+        loss = self.criterion(output, target_tensor)
+        loss.backward()
+        self.optimizer.step()
