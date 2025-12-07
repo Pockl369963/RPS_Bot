@@ -111,8 +111,8 @@ dependencies = [
 [package.metadata]
 requires-dist = [
     { name = "django", specifier = "==5.2.*" },
-    { name = "pytest", specifier = ">=9.0.2" },
-    { name = "pytest-django", specifier = ">=4.11.1" },
+    { name = "pytest", specifier = ">=8.0.0" },
+    { name = "pytest-django", specifier = ">=4.8.0" },
 ]
 
 [[package]]

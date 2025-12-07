@@ -10,5 +10,4 @@ wheels/
 .venv
 
 # obsidian
-.obsidian
-.obsidian
+.obsidian/
