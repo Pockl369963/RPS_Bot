@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Evolutionary RPS</title>
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/game.css' %}">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>EVOLUTIONARY <span class="accent">RPS</span></h1>
+            <div class="stats-bar">
+                <div class="stat-item">
+                    <span class="stat-label">Wins</span>
+                    <span class="stat-value" id="wins">0</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Draws</span>
+                    <span class="stat-value" id="draws">0</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Losses</span>
+                    <span class="stat-value" id="losses">0</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Rate</span>
+                    <span class="stat-value" id="win-rate">0.0%</span>
+                </div>
+            </div>
+        </header>
+
+        <main>
+            <div class="game-arena">
+                <div class="player-side">
+                    <h2>YOU</h2>
+                    <div class="hand-display" id="user-hand">
+                        <span class="emoji">Waiting...</span>
+                    </div>
+                </div>
+                
+                <div class="vs-divider">VS</div>
+
+                <div class="ai-side">
+                    <h2>AI <span class="ai-status">ONLINE</span></h2>
+                    <div class="hand-display" id="ai-hand">
+                        <span class="emoji">Waiting...</span>
+                    </div>
+                    <div class="ai-thought">
+                        Strategy: <span id="strategy-name">Initializing...</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="result-display" id="result-message">
+                READY
+            </div>
+
+            <div class="controls">
+                <button class="choice-btn" data-move="R">
+                    <span class="icon">✊</span>
+                    <span class="label">ROCK</span>
+                </button>
+                <button class="choice-btn" data-move="P">
+                    <span class="icon">✋</span>
+                    <span class="label">PAPER</span>
+                </button>
+                <button class="choice-btn" data-move="S">
+                    <span class="icon">✌️</span>
+                    <span class="label">SCISSORS</span>
+                </button>
+            </div>
+        </main>
+
+        <footer>
+            <div class="total-games">Games: <span id="total-games">0</span></div>
+            <button id="reset-btn" class="secondary-btn">RESET MEMORY</button>
+        </footer>
+    </div>
+    
+    <script src="{% static 'js/game.js' %}"></script>
+</body>
+</html>
