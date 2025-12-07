@@ -1,0 +1,11 @@
+[project]
+name = "rps-project"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "django==5.2.*",
+    "pytest>=9.0.2",
+    "pytest-django>=4.11.1",
+]
