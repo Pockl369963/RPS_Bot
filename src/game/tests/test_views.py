@@ -75,3 +75,10 @@ class TestGameAPI:
         
         # ログが消えているか
         assert GameLog.objects.filter(player=player).count() == 0
+
+    def test_index_view(self):
+        """トップページが正しく表示されるか"""
+        url = reverse('index')
+        response = self.client.get(url)
+        assert response.status_code == 200
+        assert 'EVOLUTIONARY' in response.content.decode('utf-8')

@@ -22,8 +22,6 @@ def play_view(request):
     if user_move not in ["R", "P", "S"]:
         return JsonResponse({"error": "Invalid move"}, status=400)
 
-def index_view(request):
-    return render(request, 'game/index.html')
 
     # 1. Playerの取得または作成
     player = None
@@ -117,6 +115,9 @@ def index_view(request):
         },
         "strategy": strategy_name
     })
+
+def index_view(request):
+    return render(request, 'game/index.html')
 
 @csrf_exempt
 def reset_view(request):
